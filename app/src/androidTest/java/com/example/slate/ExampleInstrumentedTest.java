@@ -1,4 +1,4 @@
-package com.example.myapplication3;
+package com.example.slate;
 
 import android.content.Context;
 
