@@ -1,10 +1,14 @@
-package com.example.slate;
+package com.helloworld.slate;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.graphics.*;
 
 public class PaintView extends View {
 

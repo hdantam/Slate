@@ -1,8 +1,8 @@
-package com.example.slate;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.helloworld.slate;
 
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 

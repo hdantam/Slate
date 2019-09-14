@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "350669665892",
+    "firebase_url": "https://slate-d3075.firebaseio.com",
+    "project_id": "slate-d3075",
+    "storage_bucket": "slate-d3075.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350669665892:android:61750d1fd874b202e91171",
+        "android_client_info": {
+          "package_name": "com.helloworld.slate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "350669665892-2i1orh097ilqk1f74cst44gch9kltudf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGs_s7FqJugwdwoUSJV0VWq3SVuudYEAk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "350669665892-2i1orh097ilqk1f74cst44gch9kltudf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
