@@ -7,8 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.api.Backend;
 
 public class MainActivity extends AppCompatActivity {
-    BackendSocket backendSocket;
-    PaintView paintView;
+    private static BackendSocket backendSocket;
+    private static PaintView paintView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         backendSocket = new BackendSocket();
@@ -19,15 +19,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(paintView);
     }
 
-    public void updateWhiteboard(Bitmap b){
+    public static void updateWhiteboard(Bitmap b){
         backendSocket.updateWhiteboard(b);
     }
 
-    public void setBitmap(Bitmap b){
+    public static void setBitmap(Bitmap b){
         paintView.setBitmap(b);
     }
 
-    public Bitmap getBitmap() {
+    public static Bitmap getBitmap() {
         return paintView.getBitmap();
     }
 

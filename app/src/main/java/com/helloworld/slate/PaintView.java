@@ -11,14 +11,15 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
 public class PaintView extends View {
-    BackendSocket backendSocket = BackendSocket.getInstance();
-
     public LayoutParams params;
     private Path path = new Path();
-    private Paint brush = new Paint();
-    private Paint pBg = new Paint();
-    private Bitmap b;
-    private Canvas c;
+    private static Paint brush = new Paint();
+    private static Paint pBg = new Paint();
+    private static Bitmap b;
+    private static Canvas c;
+    private static int width = 0;
+    private static int height = 0;
+
 
     public PaintView(Context context) {
         super(context);
@@ -30,10 +31,7 @@ public class PaintView extends View {
         brush.setStrokeWidth(8f);
 
         params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-
-
     }
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
@@ -52,7 +50,7 @@ public class PaintView extends View {
             case MotionEvent.ACTION_UP:
                 path.lineTo(pointX, pointY);
                 c.drawPath(path, brush);
-                backendSocket.updateWhiteboard(getBitmap());
+                MainActivity.updateWhiteboard(getBitmap());
                 break;
 
             default:
@@ -61,19 +59,25 @@ public class PaintView extends View {
         }
         postInvalidate();
         return false;
-
-
     }
 
-    public void setBitmap(Bitmap b){
+    public static void setBitmap(Bitmap b){
+        c = new Canvas();
+        //Bitmap Transparent = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        //c.setBitmap(Transparent);
+        //c.drawBitmap(b, 0, 0, brush);
         Canvas tempCanvas = new Canvas(b);
         tempCanvas.drawBitmap(b, 0, 0, pBg);
-        tempCanvas.drawLine(0, 0,0,0,pBg);
-        c.drawBitmap(b,0,0,pBg);
+        tempCanvas.drawLine(0, 0,0,0, pBg);
+        c = new Canvas(b);
+        //c.drawBitmap(b,0,0,pBg);
+        //c = new Canvas(b);
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        width = w;
+        height = h;
         super.onSizeChanged(w, h, oldw, oldh);
         b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         c = new Canvas(b);
@@ -86,7 +90,7 @@ public class PaintView extends View {
         canvas.drawPath(path, brush);
     }
 
-    public Bitmap getBitmap() {
+    public static Bitmap getBitmap() {
         return b;
     }
 }

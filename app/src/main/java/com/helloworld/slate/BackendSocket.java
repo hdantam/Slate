@@ -20,7 +20,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 
 public class BackendSocket {
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     Source source = Source.SERVER;
 
@@ -28,7 +28,7 @@ public class BackendSocket {
 
     private DocumentReference docRef = db.collection("whiteboards").document("wb-0001");
 
-    public String encodeToBase64(Bitmap image){
+    public static String encodeToBase64(Bitmap image){
         ByteArrayOutputStream  byteStream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG, 100, byteStream);
         byte[] byteArray = byteStream.toByteArray();
@@ -40,7 +40,7 @@ public class BackendSocket {
         return BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
     }
 
-    public void updateWhiteboard (Bitmap currentWhiteboard){
+    public static void updateWhiteboard (Bitmap currentWhiteboard){
         String bitmapString = encodeToBase64(currentWhiteboard);
         db.collection("whiteboards").document("wb-0001").update("bitmap", bitmapString);
    }
@@ -59,17 +59,17 @@ public class BackendSocket {
                        ? "Local" : "Server";
 
                if (snapshot != null && snapshot.exists()) {
-                   try {
-                       String bitMap = snapshot.get("bitmap").toString();
-                       System.out.println(bitMap);
-                       MainActivity.setBitmap(decodeFromBase64(bitMap));
-                   } catch(Exception except){
-                       System.out.println("NULL POINTER");
 
-                   }
+                       String bitmapString = snapshot.get("bitmap").toString();
+                       //System.out.println(bitMap);
+                       Bitmap workingBitmap = decodeFromBase64(bitmapString);
+                       Bitmap mutableBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
+                       MainActivity.setBitmap(mutableBitmap);
+                       System.out.println("Reach set point");
+
                    //Log.d(TAG, source + " data: " + snapshot.get("bitmap"));
                } else {
-                   Log.d(TAG, source + " data: null");
+                   System.out.println("DIDNT WORK");
                }
            }
        });
