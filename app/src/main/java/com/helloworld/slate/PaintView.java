@@ -30,18 +30,12 @@ public class PaintView extends View {
     public LayoutParams params;
     private Path path = new Path();
     private Segment currentSegment;
-    private String syncType;
-    private Point currentPoint;
 
     private Paint brush = new Paint();
     private Paint pBg = new Paint();
 
     private Bitmap b;
     private Canvas c;
-
-    private int width = 0;
-    private int height = 0;
-
 
     public PaintView(Context context) {
         super(context);
@@ -63,10 +57,8 @@ public class PaintView extends View {
         switch(event.getAction()){
             //When user begins new segment
             case MotionEvent.ACTION_DOWN:
-                syncType = "START";
                 currentSegment = new Segment();
                 currentSegment.points.add(new Point(pointX, pointY));
-                //currentPoint = new Point(pointX, pointY);
                 path.moveTo(pointX, pointY);
                 return true;
             //User continues drawing segment
@@ -76,15 +68,12 @@ public class PaintView extends View {
                 break;
              //User finishes drawing segment
             case MotionEvent.ACTION_UP:
-                syncType = "END";
                 path.lineTo(pointX, pointY);
                 c.drawPath(path, brush);
-                updateWhiteboard(currentSegment);
+                updateWhiteboard();
                 break;
-
             default:
                 return false;
-
         }
         postInvalidate();
         return false;
@@ -108,18 +97,10 @@ public class PaintView extends View {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        width = w;
-        height = h;
         super.onSizeChanged(w, h, oldw, oldh);
         b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         c = new Canvas(b);
     }
-
-//    void onDraw() {
-//        super.onDraw(c);
-//        c.drawBitmap(b, 0, 0, pBg);
-//        c.drawPath(path, brush);
-//    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -128,14 +109,8 @@ public class PaintView extends View {
         canvas.drawPath(path, brush);
     }
 
-    public Bitmap getBitmap() {
-        return b;
-    }
-
-    public void updateWhiteboard (Segment segment){//Bitmap currentWhiteboard){
-        //String bitmapString = encodeToBase64(currentWhiteboard);
+    public void updateWhiteboard (){
         db.collection("whiteboards").document("wb-0001").update("segment", currentSegment.points);
-        //db.collection("whiteboards").document("wb-0001").update("syncType", syncType);
     }
 
     public void addEventListener(){
@@ -149,34 +124,14 @@ public class PaintView extends View {
                 }
                 String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
                         ? "Local" : "Server";
-                if (snapshot != null && snapshot.exists()) {// && snapshot.get("segment")) {
+                if (snapshot != null && snapshot.exists()) {
                     try {
-//                        HashMap<String, Double> point = (HashMap<String, Double>) snapshot.get("segment");
-//                        String syncType = (String) snapshot.get("segment");
-//                        float x = ((Double) (point.get("x"))).floatValue();
-//                        float y = ((Double) (point.get("y"))).floatValue();
-//                        switch (syncType) {
-//                            case "START":
-//                                path.moveTo(x, y);
-//                                break;
-//                            case "DRAWING":
-//                                path.lineTo(x, y);
-//                                break;
-//                            case "END":
-//                                path.lineTo(x, y);
-//                                c.drawPath(path, brush);
-//                                break;
-//                        }
-//                        ArrayList<HashMap<Object, Object>> test = (ArrayList<HashMap<Object, Object>>) snapshot.get("segment");
-//                        System.out.println(test.getClass());
                         ArrayList<HashMap<String, Double>> points = (ArrayList<HashMap<String, Double>>) snapshot.get("segment");
                         syncPoints(points);
                         postInvalidate();
                     } catch (Exception ee){
                         System.out.println(ee);
                     }
-                } else {
-                    //System.out.println("DIDNT WORK");
                 }
             }
         });
