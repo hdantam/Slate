@@ -6,19 +6,41 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
+import androidx.annotation.Nullable;
+
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class PaintView extends View {
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String TAG = "Slate";
+    private DocumentReference docRef = db.collection("whiteboards").document("wb-0001");
+
     public LayoutParams params;
     private Path path = new Path();
-    private static Paint brush = new Paint();
-    private static Paint pBg = new Paint();
-    private static Bitmap b;
-    private static Canvas c;
-    private static int width = 0;
-    private static int height = 0;
+    private Segment currentSegment;
+    private String syncType;
+    private Point currentPoint;
+
+    private Paint brush = new Paint();
+    private Paint pBg = new Paint();
+
+    private Bitmap b;
+    private Canvas c;
+
+    private int width = 0;
+    private int height = 0;
 
 
     public PaintView(Context context) {
@@ -39,18 +61,25 @@ public class PaintView extends View {
         float pointY = event.getY();
 
         switch(event.getAction()){
+            //When user begins new segment
             case MotionEvent.ACTION_DOWN:
+                syncType = "START";
+                currentSegment = new Segment();
+                currentSegment.points.add(new Point(pointX, pointY));
+                //currentPoint = new Point(pointX, pointY);
                 path.moveTo(pointX, pointY);
                 return true;
-
+            //User continues drawing segment
             case MotionEvent.ACTION_MOVE:
+                currentSegment.points.add(new Point(pointX, pointY));
                 path.lineTo(pointX,pointY);
                 break;
-
+             //User finishes drawing segment
             case MotionEvent.ACTION_UP:
+                syncType = "END";
                 path.lineTo(pointX, pointY);
                 c.drawPath(path, brush);
-                MainActivity.updateWhiteboard(getBitmap());
+                updateWhiteboard(currentSegment);
                 break;
 
             default:
@@ -61,17 +90,20 @@ public class PaintView extends View {
         return false;
     }
 
-    public static void setBitmap(Bitmap b){
-        c = new Canvas();
-        //Bitmap Transparent = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        //c.setBitmap(Transparent);
-        //c.drawBitmap(b, 0, 0, brush);
-        Canvas tempCanvas = new Canvas(b);
-        tempCanvas.drawBitmap(b, 0, 0, pBg);
-        tempCanvas.drawLine(0, 0,0,0, pBg);
-        c = new Canvas(b);
-        //c.drawBitmap(b,0,0,pBg);
-        //c = new Canvas(b);
+    public void syncPoints(ArrayList<HashMap<String, Double>> points) {
+        try {
+            float x = ((Double) (points.get(0).get("x"))).floatValue();
+            float y = ((Double) (points.get(0).get("y"))).floatValue();
+            path.moveTo(x, y);
+            for (int i = 1; i < points.size(); i++) {
+                x = ((Double) points.get(i).get("x")).floatValue();
+                y = ((Double) points.get(i).get("y")).floatValue();
+                path.lineTo(x, y);
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to sync for reason: " + e);
+        }
+
     }
 
     @Override
@@ -83,6 +115,12 @@ public class PaintView extends View {
         c = new Canvas(b);
     }
 
+//    void onDraw() {
+//        super.onDraw(c);
+//        c.drawBitmap(b, 0, 0, pBg);
+//        c.drawPath(path, brush);
+//    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -90,7 +128,57 @@ public class PaintView extends View {
         canvas.drawPath(path, brush);
     }
 
-    public static Bitmap getBitmap() {
+    public Bitmap getBitmap() {
         return b;
+    }
+
+    public void updateWhiteboard (Segment segment){//Bitmap currentWhiteboard){
+        //String bitmapString = encodeToBase64(currentWhiteboard);
+        db.collection("whiteboards").document("wb-0001").update("segment", currentSegment.points);
+        //db.collection("whiteboards").document("wb-0001").update("syncType", syncType);
+    }
+
+    public void addEventListener(){
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG,"Listen failed.", e);
+                    return;
+                }
+                String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
+                        ? "Local" : "Server";
+                if (snapshot != null && snapshot.exists()) {// && snapshot.get("segment")) {
+                    try {
+//                        HashMap<String, Double> point = (HashMap<String, Double>) snapshot.get("segment");
+//                        String syncType = (String) snapshot.get("segment");
+//                        float x = ((Double) (point.get("x"))).floatValue();
+//                        float y = ((Double) (point.get("y"))).floatValue();
+//                        switch (syncType) {
+//                            case "START":
+//                                path.moveTo(x, y);
+//                                break;
+//                            case "DRAWING":
+//                                path.lineTo(x, y);
+//                                break;
+//                            case "END":
+//                                path.lineTo(x, y);
+//                                c.drawPath(path, brush);
+//                                break;
+//                        }
+//                        ArrayList<HashMap<Object, Object>> test = (ArrayList<HashMap<Object, Object>>) snapshot.get("segment");
+//                        System.out.println(test.getClass());
+                        ArrayList<HashMap<String, Double>> points = (ArrayList<HashMap<String, Double>>) snapshot.get("segment");
+                        syncPoints(points);
+                        postInvalidate();
+                    } catch (Exception ee){
+                        System.out.println(ee);
+                    }
+                } else {
+                    //System.out.println("DIDNT WORK");
+                }
+            }
+        });
     }
 }

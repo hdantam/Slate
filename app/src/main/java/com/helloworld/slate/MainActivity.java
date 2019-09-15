@@ -6,29 +6,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.api.Backend;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class MainActivity extends AppCompatActivity {
-    private static BackendSocket backendSocket;
-    private static PaintView paintView;
+    //private static BackendSocket backendSocket;
+    private PaintView paintView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        backendSocket = new BackendSocket();
+        //backendSocket = new BackendSocket();
         paintView = new PaintView(this);
+        paintView.addEventListener();
         super.onCreate(savedInstanceState);
 
-        backendSocket.addEventListener();
+        //backendSocket.addEventListener();
         setContentView(paintView);
     }
-
-    public static void updateWhiteboard(Bitmap b){
-        backendSocket.updateWhiteboard(b);
-    }
-
-    public static void setBitmap(Bitmap b){
-        paintView.setBitmap(b);
-    }
-
-    public static Bitmap getBitmap() {
-        return paintView.getBitmap();
-    }
-
 }
