@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
 public class PaintView extends View {
+    BackendSocket backendSocket = BackendSocket.getInstance();
 
     public LayoutParams params;
     private Path path = new Path();
@@ -18,7 +19,6 @@ public class PaintView extends View {
     private Paint pBg = new Paint();
     private Bitmap b;
     private Canvas c;
-
 
     public PaintView(Context context) {
         super(context);
@@ -40,7 +40,6 @@ public class PaintView extends View {
         float pointX = event.getX();
         float pointY = event.getY();
 
-
         switch(event.getAction()){
             case MotionEvent.ACTION_DOWN:
                 path.moveTo(pointX, pointY);
@@ -53,7 +52,7 @@ public class PaintView extends View {
             case MotionEvent.ACTION_UP:
                 path.lineTo(pointX, pointY);
                 c.drawPath(path, brush);
-                path = new Path();
+                backendSocket.updateWhiteboard(getBitmap());
                 break;
 
             default:
@@ -66,13 +65,19 @@ public class PaintView extends View {
 
     }
 
+    public void setBitmap(Bitmap b){
+        Canvas tempCanvas = new Canvas(b);
+        tempCanvas.drawBitmap(b, 0, 0, pBg);
+        tempCanvas.drawLine(0, 0,0,0,pBg);
+        c.drawBitmap(b,0,0,pBg);
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         c = new Canvas(b);
     }
-
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -81,7 +86,7 @@ public class PaintView extends View {
         canvas.drawPath(path, brush);
     }
 
-    public Bitmap getBitmap(Bitmap b) {
+    public Bitmap getBitmap() {
         return b;
     }
 }
