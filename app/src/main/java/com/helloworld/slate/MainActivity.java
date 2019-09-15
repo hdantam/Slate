@@ -1,6 +1,9 @@
 package com.helloworld.slate;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -11,6 +14,11 @@ public class MainActivity extends AppCompatActivity {
         paintView.addEventListener();
 
         super.onCreate(savedInstanceState);
-        setContentView(paintView);
+        setContentView(R.layout.activity_main);
+
+        //setContentView(R.layout.activity_paint_view_new);
+        //Intent intent = new Intent(MainActivity.this, PaintViewNew.class);
+        //startActivity(intent);
     }
+
 }
