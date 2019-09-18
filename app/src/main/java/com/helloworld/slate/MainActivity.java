@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openWhiteboard(){
-        Intent intent = new Intent(this, PaintViewNew.class);
+        Intent intent = new Intent(this, WhiteboardActivity.class);
         startActivity(intent);
     }
 

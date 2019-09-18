@@ -1,5 +1,10 @@
 package com.helloworld.slate;
 
+/**
+ * Holds the x and y values of a drawing path. This allows for other connected phones to emulate
+ * the new line.
+ */
+
 public class Point {
     private float x;
     private float y;
