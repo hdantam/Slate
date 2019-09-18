@@ -1,11 +1,11 @@
-# SLATE 
+# Slate
 ## What is it? 
 Slate was a project developed through 'Hello World 2019', Purdue University's freshman hackathon. 
 The purpose of Slate was to enable a new level of mobile collaboration. Through this real-time 
 whiteboard users can share notes, play games, create art and more. More information can be found in the
 powerpoint linked in the description.
 
-### Organization/Project Management
+## Organization/Project Management
 To increase efficiency the team was split up into two/three groups, meeting every 4-5 hours. This allowed us
 to maintain communication while still having time to develop the primary technologies. The group was split into
 the following teams:
@@ -15,7 +15,7 @@ the following teams:
 - Integration Team: Worked between the two teams ensuring the product was going to meet it's end goal
 
 
-### Group Members
+## Group Members
 - Harrison McCarty (Cloud team)
 - Vishisht Jain (UI Team)
 - Anish Tiware (Integration Team)
