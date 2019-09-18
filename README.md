@@ -9,8 +9,8 @@ To increase efficiency the team was split up into two/three groups, meeting ever
 to maintain communication while still having time to develop the primary technologies. The group was split into
 the following teams:
 
-- UI Team: Developed the application's frontend and created features such as the clear button
-- Cloud Team: Designed and implemented the teams backend, allowing for real time technology
+- UI Team: Developed the application's frontend and allowed for drawing on the whiteboard locally
+- Cloud Team: Designed and implemented the teams backend, allowing for cloud syncing technology
 - Integration Team: Worked between the two teams ensuring the product was going to meet it's end goal
 
 
